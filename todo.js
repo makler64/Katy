@@ -113,9 +113,24 @@ function addTodo() {
     saveTodos();
     addSingleTodo(newTodo, 0);
     
-    // Очистка поля ввода и закрытие клавиатуры
+    // Очистка поля ввода
     todoInput.value = '';
-    todoInput.blur(); // Закрываем клавиатуру
+    
+    // Принудительная очистка с задержкой
+    setTimeout(() => {
+        todoInput.value = '';
+    }, 100);
+    
+    // Закрытие клавиатуры
+    todoInput.blur();
+    
+    // Прокручиваем наверх для просмотра новой задачи
+    setTimeout(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }, 200);
     
     // Фиксируем инпут внизу экрана
     const inputContainer = document.querySelector('.todo-input-container-fixed');
