@@ -1,7 +1,10 @@
 // Элементы DOM
 const todoInput = document.getElementById('todoInput');
 const addTodoBtn = document.getElementById('addTodoBtn');
-const todoList = document.getElementById('todoList');
+const activeTodoList = document.getElementById('activeTodoList');
+const completedTodoList = document.getElementById('completedTodoList');
+const activeCount = document.getElementById('activeCount');
+const completedCount = document.getElementById('completedCount');
 const backBtn = document.getElementById('backBtn');
 
 // Массив задач (загружается из localStorage)
@@ -11,20 +14,52 @@ let todos = JSON.parse(localStorage.getItem('todos')) || [];
 // Инициализация
 document.addEventListener('DOMContentLoaded', function() {
     renderTodos();
+    setupEventListeners();
     setupHotkeys();
     setupAutoSave();
+    setupMobileKeyboard();
 });
 
 // Отрисовка списка задач
 function renderTodos() {
-    todoList.innerHTML = '';
+    activeTodoList.innerHTML = '';
+    completedTodoList.innerHTML = '';
     
-    if (todos.length === 0) {
-        todoList.innerHTML = '<div class="empty-todos">Пока нет задач. Добавьте первую!</div>';
-        return;
+    const activeTodos = todos.filter(todo => !todo.completed);
+    const completedTodos = todos.filter(todo => todo.completed);
+    
+    // Обновляем счетчики
+    updateCounters(activeTodos.length, completedTodos.length);
+    
+    // Отрисовка активных задач
+    if (activeTodos.length === 0) {
+        activeTodoList.innerHTML = '<div class="empty-todos">Нет активных задач</div>';
+    } else {
+        activeTodos.forEach((todo, index) => {
+            const actualIndex = todos.findIndex(t => t.id === todo.id);
+            createTodoItem(todo, actualIndex, activeTodoList);
+        });
     }
     
-    todos.forEach((todo, index) => {
+    // Отрисовка завершенных задач
+    if (completedTodos.length === 0) {
+        completedTodoList.innerHTML = '<div class="empty-todos">Нет завершенных задач</div>';
+    } else {
+        completedTodos.forEach((todo, index) => {
+            const actualIndex = todos.findIndex(t => t.id === todo.id);
+            createTodoItem(todo, actualIndex, completedTodoList);
+        });
+    }
+}
+
+// Обновление счетчиков
+function updateCounters(activeCountValue, completedCountValue) {
+    activeCount.textContent = activeCountValue;
+    completedCount.textContent = completedCountValue;
+}
+
+// Создание элемента задачи
+function createTodoItem(todo, index, container) {
         const todoItem = document.createElement('div');
         todoItem.className = `todo-item ${todo.completed ? 'completed' : ''}`;
         todoItem.style.opacity = '0';
@@ -53,15 +88,14 @@ function renderTodos() {
         const checkbox = todoItem.querySelector('.todo-checkbox');
         checkbox.addEventListener('change', () => toggleTodo(index));
         
-        todoList.appendChild(todoItem);
+    container.appendChild(todoItem);
         
         // Анимация появления
         setTimeout(() => {
             todoItem.style.transition = 'all 0.3s ease';
             todoItem.style.opacity = '1';
             todoItem.style.transform = 'translateY(0)';
-        }, index * 100);
-    });
+    }, 50);
 }
 
 // Добавление новой задачи
@@ -75,52 +109,56 @@ function addTodo() {
         id: Date.now()
     };
     
-    todos.push(newTodo);
+    todos.unshift(newTodo);
     saveTodos();
-    renderTodos();
+    addSingleTodo(newTodo, 0);
     
     // Очистка поля ввода
     todoInput.value = '';
     todoInput.focus();
 }
 
+// Добавление одной задачи без анимации для существующих
+function addSingleTodo(todo, index) {
+    // Очищаем сообщение "Нет активных задач" если оно есть
+    if (activeTodoList.innerHTML.includes('Нет активных задач')) {
+        activeTodoList.innerHTML = '';
+    }
+    
+    createTodoItem(todo, index, activeTodoList);
+    
+    // Обновляем счетчики
+    const activeTodos = todos.filter(todo => !todo.completed);
+    const completedTodos = todos.filter(todo => todo.completed);
+    updateCounters(activeTodos.length, completedTodos.length);
+    
+    updateStats();
+}
+
 // Переключение статуса задачи
 function toggleTodo(index) {
+    if (index < 0 || index >= todos.length) return;
+    
     todos[index].completed = !todos[index].completed;
     saveTodos();
     
-    // Обновляем только визуальное состояние без перерендеринга
-    const todoList = document.getElementById('todoList');
-    const todoItems = todoList.querySelectorAll('.todo-item');
-    
-    if (index >= 0 && index < todoItems.length) {
-        const todoItem = todoItems[index];
-        const todoText = todoItem.querySelector('.todo-text');
-        const checkbox = todoItem.querySelector('.todo-checkbox');
-        
-        if (todos[index].completed) {
-            todoItem.classList.add('completed');
-            todoText.style.textDecoration = 'line-through';
-            todoText.style.color = '#666';
-        } else {
-            todoItem.classList.remove('completed');
-            todoText.style.textDecoration = 'none';
-            todoText.style.color = '#333';
-        }
-        
-        checkbox.checked = todos[index].completed;
-    }
-    
+    // Перерисовываем списки, чтобы задача переместилась в нужную секцию
+    renderTodos();
     updateStats();
 }
 
 // Удаление задачи с анимацией
 function deleteTodo(index) {
-    const todoList = document.getElementById('todoList');
-    const todoItems = todoList.querySelectorAll('.todo-item');
+    if (index < 0 || index >= todos.length) return;
     
-    if (index >= 0 && index < todoItems.length) {
-        const todoItem = todoItems[index];
+    // Находим элемент в DOM для анимации
+    const allTodoItems = [...activeTodoList.querySelectorAll('.todo-item'), ...completedTodoList.querySelectorAll('.todo-item')];
+    const todoItem = allTodoItems.find(item => {
+        const todoText = item.querySelector('.todo-text');
+        return todoText && todoText.textContent.trim() === todos[index].text;
+    });
+    
+    if (todoItem) {
         todoItem.style.transition = 'all 0.3s ease';
         todoItem.style.opacity = '0';
         todoItem.style.transform = 'translateX(100%)';
@@ -128,49 +166,35 @@ function deleteTodo(index) {
         setTimeout(() => {
             todos.splice(index, 1);
             saveTodos();
-            todoItem.remove();
+            renderTodos();
             updateStats();
-            
-            // Обновляем индексы для оставшихся задач
-            updateTaskIndices();
         }, 300);
+    } else {
+        // Если элемент не найден, просто удаляем из массива
+        todos.splice(index, 1);
+        saveTodos();
+        renderTodos();
+        updateStats();
     }
 }
 
-// Обновление индексов задач после удаления
-function updateTaskIndices() {
-    const todoList = document.getElementById('todoList');
-    const todoItems = todoList.querySelectorAll('.todo-item');
-    
-    todoItems.forEach((item, newIndex) => {
-        // Обновляем обработчики событий
-        const checkbox = item.querySelector('.todo-checkbox');
-        const editBtn = item.querySelector('.todo-edit');
-        const duplicateBtn = item.querySelector('.todo-duplicate');
-        const deleteBtn = item.querySelector('.todo-delete');
-        
-        // Удаляем старые обработчики
-        checkbox.replaceWith(checkbox.cloneNode(true));
-        const newCheckbox = item.querySelector('.todo-checkbox');
-        newCheckbox.addEventListener('change', () => toggleTodo(newIndex));
-        
-        // Обновляем onclick атрибуты
-        editBtn.setAttribute('onclick', `editTodo(${newIndex})`);
-        duplicateBtn.setAttribute('onclick', `duplicateTodo(${newIndex})`);
-        deleteBtn.setAttribute('onclick', `deleteTodo(${newIndex})`);
-    });
-}
 
 // Редактирование задачи
 function editTodo(index) {
-    const todoList = document.getElementById('todoList');
-    const todoItems = todoList.querySelectorAll('.todo-item');
+    if (index < 0 || index >= todos.length) return;
     
-    if (index < 0 || index >= todoItems.length) return;
+    // Находим элемент в DOM
+    const allTodoItems = [...activeTodoList.querySelectorAll('.todo-item'), ...completedTodoList.querySelectorAll('.todo-item')];
+    const todoItem = allTodoItems.find(item => {
+        const todoText = item.querySelector('.todo-text');
+        return todoText && todoText.textContent.trim() === todos[index].text;
+    });
     
-    const todoItem = todoItems[index];
+    if (!todoItem) return;
+    
     const todoText = todoItem.querySelector('.todo-text');
-    const currentText = todos[index].text;
+    const currentTodo = todos[index];
+    const currentText = currentTodo.text;
     
     // Создаем поле ввода
     const input = document.createElement('input');
@@ -307,9 +331,62 @@ function setupAutoSave() {
     }, 30000); // каждые 30 секунд
 }
 
+// Настройка для мобильной клавиатуры
+function setupMobileKeyboard() {
+    const inputContainer = document.querySelector('.todo-input-container-fixed');
+    const todoInput = document.getElementById('todoInput');
+    
+    if (!inputContainer || !todoInput) return;
+    
+    // Обработчик фокуса на инпуте
+    todoInput.addEventListener('focus', function() {
+        // Небольшая задержка для корректного определения высоты клавиатуры
+        setTimeout(() => {
+            // Поднимаем инпут на уровень клавиатуры
+            inputContainer.style.position = 'fixed';
+            inputContainer.style.bottom = '0px';
+            inputContainer.style.transform = 'translateY(0)';
+            
+            // Добавляем дополнительный отступ снизу для контента
+            const todoPageBody = document.querySelector('.todo-page-body');
+            if (todoPageBody) {
+                todoPageBody.style.paddingBottom = '120px';
+            }
+        }, 300);
+    });
+    
+    // Обработчик потери фокуса
+    todoInput.addEventListener('blur', function() {
+        // Возвращаем инпут в исходное положение
+        inputContainer.style.position = 'fixed';
+        inputContainer.style.bottom = '0px';
+        inputContainer.style.transform = 'translateY(0)';
+        
+        // Возвращаем обычный отступ для контента
+        const todoPageBody = document.querySelector('.todo-page-body');
+        if (todoPageBody) {
+            todoPageBody.style.paddingBottom = '100px';
+        }
+    });
+    
+    // Обработчик изменения размера окна (для поворота экрана)
+    window.addEventListener('resize', function() {
+        if (document.activeElement === todoInput) {
+            // Если инпут в фокусе, обновляем позицию
+            setTimeout(() => {
+                inputContainer.style.position = 'fixed';
+                inputContainer.style.bottom = '0px';
+                inputContainer.style.transform = 'translateY(0)';
+            }, 100);
+        }
+    });
+}
+
 
 // Дублирование задачи
 function duplicateTodo(index) {
+    if (index < 0 || index >= todos.length) return;
+    
     const originalTodo = todos[index];
     const duplicatedTodo = {
         ...originalTodo,
@@ -318,49 +395,11 @@ function duplicateTodo(index) {
         completed: false
     };
     
-    todos.splice(index + 1, 0, duplicatedTodo);
+    todos.unshift(duplicatedTodo);
     saveTodos();
     
-    // Создаем новую задачу и добавляем её после текущей
-    const todoList = document.getElementById('todoList');
-    const todoItem = document.createElement('div');
-    todoItem.className = 'todo-item';
-    todoItem.innerHTML = `
-        <label class="todo-checkbox-container">
-            <input type="checkbox" class="todo-checkbox" ${duplicatedTodo.completed ? 'checked' : ''}>
-            <span class="checkmark"></span>
-        </label>
-        <span class="todo-text">${duplicatedTodo.text}</span>
-        <div class="todo-actions">
-            <button class="todo-edit" onclick="editTodo(${index + 1})" title="Редактировать (F2)">
-                <span class="material-icons">edit</span>
-            </button>
-            <button class="todo-duplicate" onclick="duplicateTodo(${index + 1})" title="Дублировать">
-                <span class="material-icons">content_copy</span>
-            </button>
-            <button class="todo-delete" onclick="deleteTodo(${index + 1})" title="Удалить (Delete)">
-                <span class="material-icons">delete</span>
-            </button>
-        </div>
-    `;
-    
-    // Добавляем обработчик для новой задачи
-    const checkbox = todoItem.querySelector('.todo-checkbox');
-    checkbox.addEventListener('change', () => toggleTodo(index + 1));
-    
-    // Вставляем после текущей задачи
-    const currentItem = todoList.children[index];
-    todoList.insertBefore(todoItem, currentItem.nextSibling);
-    
-    // Анимация появления только для новой задачи
-    todoItem.style.opacity = '0';
-    todoItem.style.transform = 'translateY(-10px)';
-    setTimeout(() => {
-        todoItem.style.transition = 'all 0.3s ease';
-        todoItem.style.opacity = '1';
-        todoItem.style.transform = 'translateY(0)';
-    }, 10);
-    
+    // Перерисовываем списки, чтобы дублированная задача появилась в правильной секции
+    renderTodos();
     updateStats();
 }
 
@@ -370,6 +409,7 @@ function saveTodos() {
 }
 
 // Обработчики событий
+function setupEventListeners() {
 addTodoBtn.addEventListener('click', addTodo);
 
 todoInput.addEventListener('keypress', function(e) {
@@ -394,3 +434,4 @@ backBtn.addEventListener('click', function() {
         window.location.href = 'index.html';
     }, 1000);
 });
+}

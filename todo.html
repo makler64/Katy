@@ -74,30 +74,40 @@
 
     <!-- Todo страница -->
     <div class="todo-page-content">
-        <!-- Кнопка назад -->
-        <div class="back-button-container">
+        <!-- Кнопка назад и заголовок -->
+        <div class="todo-header">
             <button id="backBtn" class="back-btn">
                 <span class="material-icons">arrow_back</span>
                 Назад
             </button>
+            <h1 class="page-title">Записная книжка</h1>
         </div>
 
-        <div class="todo-page-header">
-            <h1>Записная книжка</h1>
-            <p>Организуй свои дела и планы</p>
-            <div class="todo-input-container">
-                <input type="text" id="todoInput" placeholder="Добавить новую задачу... (Ctrl+Enter)" maxlength="100">
-                <button id="addTodoBtn" class="add-todo-btn">
-                    <span class="material-icons">add</span>
-                </button>
+        
+        <div class="todo-page-body">
+            <!-- Актуальные задачи -->
+            <div class="todo-section">
+                <h2 class="section-title">Актуальные <span class="section-count" id="activeCount">0</span></h2>
+                <div class="todo-list" id="activeTodoList">
+                    <!-- Активные задачи будут добавлены здесь -->
+                </div>
+            </div>
+            
+            <!-- Завершенные задачи -->
+            <div class="todo-section">
+                <h2 class="section-title">Завершенные <span class="section-count" id="completedCount">0</span></h2>
+                <div class="todo-list" id="completedTodoList">
+                    <!-- Завершенные задачи будут добавлены здесь -->
+                </div>
             </div>
         </div>
         
-        <div class="todo-page-body">
-            
-            <div class="todo-list" id="todoList">
-                <!-- Задачи будут добавляться сюда -->
-            </div>
+        <!-- Закрепленный инпут внизу -->
+        <div class="todo-input-container-fixed">
+            <input type="text" id="todoInput" placeholder="Добавить новую задачу... (Ctrl+Enter)" maxlength="100">
+            <button id="addTodoBtn" class="add-todo-btn">
+                <span class="material-icons">add</span>
+            </button>
         </div>
     </div>
 
