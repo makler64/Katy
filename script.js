@@ -743,9 +743,11 @@ function initializeTodoModal() {
                 modalContent.style.transform = 'translateY(100%)';
             }
             
+            // Блокируем скролл основной страницы
+            document.body.classList.add('modal-open');
+            
             // Показываем модальное окно
             todoModal.classList.add('show');
-            document.body.style.overflow = 'hidden';
             
             // Небольшая задержка для плавной анимации
             setTimeout(() => {
@@ -772,7 +774,8 @@ function initializeTodoModal() {
             if (modalContent) {
                 modalContent.style.transform = 'translateY(100%)';
             }
-            document.body.style.overflow = 'auto';
+            // Восстанавливаем скролл основной страницы
+            document.body.classList.remove('modal-open');
         }
     };
 }

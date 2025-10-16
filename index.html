@@ -211,7 +211,15 @@
             
             <!-- Поле ввода для новой задачи (закреплено внизу) -->
             <div class="todo-input-container-fixed">
-                <input type="text" id="todoInput" placeholder="Добавить новую задачу... (Ctrl+Enter)" maxlength="100">
+                <input type="text" 
+                       id="todoInput" 
+                       placeholder="Добавить новую задачу... (Ctrl+Enter)" 
+                       maxlength="100"
+                       autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       spellcheck="false"
+                       inputmode="text">
                 <button id="addTodoBtn" class="add-todo-btn">
                     <span class="material-icons">add</span>
                 </button>
