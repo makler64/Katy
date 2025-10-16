@@ -177,8 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 150);
     });
     
-    // Блок перехода к чату (весь блок кликабельный)
-    const goToChatBtn = document.getElementById('goToChatBtn');
+    // Блок перехода к todo-листу
     const goToTodoBtn = document.getElementById('goToTodoBtn');
     
     // Функция загрузки погоды
@@ -377,73 +376,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1500);
     });
     
-    goToChatBtn.addEventListener('click', () => {
-        // Анимация нажатия
-        goToChatBtn.style.transform = 'scale(0.98)';
-        
-        // Создаем прелоадер
-        const preloader = document.createElement('div');
-        preloader.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #ff6b6b, #ff8e8e, #ffa8a8);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        `;
-        
-        // Создаем анимированный спиннер
-        const spinner = document.createElement('div');
-        spinner.style.cssText = `
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        `;
-        
-        // Создаем текст загрузки
-        const loadingText = document.createElement('div');
-        loadingText.textContent = 'Переходим к чату...';
-        loadingText.style.cssText = `
-            color: white;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.2em;
-            font-weight: 500;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        `;
-        
-        // Добавляем CSS анимацию для спиннера
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-        `;
-        document.head.appendChild(style);
-        
-        preloader.appendChild(spinner);
-        preloader.appendChild(loadingText);
-        document.body.appendChild(preloader);
-        
-        // Показываем прелоадер
-        setTimeout(() => {
-            preloader.style.opacity = '1';
-        }, 50);
-        
-        // Переход к чату
-        setTimeout(() => {
-            window.location.href = 'chat.html';
-        }, 1500);
-    });
 });
