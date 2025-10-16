@@ -90,8 +90,11 @@ function toggleTodo(index) {
     saveTodos();
     
     // Обновляем только визуальное состояние без перерендеринга
-    const todoItem = document.querySelector(`.todo-item:nth-child(${index + 1})`);
-    if (todoItem) {
+    const todoList = document.getElementById('todoList');
+    const todoItems = todoList.querySelectorAll('.todo-item');
+    
+    if (index >= 0 && index < todoItems.length) {
+        const todoItem = todoItems[index];
         const todoText = todoItem.querySelector('.todo-text');
         const checkbox = todoItem.querySelector('.todo-checkbox');
         
@@ -113,8 +116,11 @@ function toggleTodo(index) {
 
 // Удаление задачи с анимацией
 function deleteTodo(index) {
-    const todoItem = document.querySelector(`.todo-item:nth-child(${index + 1})`);
-    if (todoItem) {
+    const todoList = document.getElementById('todoList');
+    const todoItems = todoList.querySelectorAll('.todo-item');
+    
+    if (index >= 0 && index < todoItems.length) {
+        const todoItem = todoItems[index];
         todoItem.style.transition = 'all 0.3s ease';
         todoItem.style.opacity = '0';
         todoItem.style.transform = 'translateX(100%)';
@@ -157,7 +163,12 @@ function updateTaskIndices() {
 
 // Редактирование задачи
 function editTodo(index) {
-    const todoItem = document.querySelector(`.todo-item:nth-child(${index + 1})`);
+    const todoList = document.getElementById('todoList');
+    const todoItems = todoList.querySelectorAll('.todo-item');
+    
+    if (index < 0 || index >= todoItems.length) return;
+    
+    const todoItem = todoItems[index];
     const todoText = todoItem.querySelector('.todo-text');
     const currentText = todos[index].text;
     
