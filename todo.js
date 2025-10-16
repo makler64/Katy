@@ -113,9 +113,23 @@ function addTodo() {
     saveTodos();
     addSingleTodo(newTodo, 0);
     
-    // Очистка поля ввода
+    // Очистка поля ввода и закрытие клавиатуры
     todoInput.value = '';
-    todoInput.focus();
+    todoInput.blur(); // Закрываем клавиатуру
+    
+    // Фиксируем инпут внизу экрана
+    const inputContainer = document.querySelector('.todo-input-container-fixed');
+    if (inputContainer) {
+        inputContainer.style.position = 'fixed';
+        inputContainer.style.bottom = '0px';
+        inputContainer.style.transform = 'translateY(0)';
+    }
+    
+    // Возвращаем обычный отступ для контента
+    const todoPageBody = document.querySelector('.todo-page-body');
+    if (todoPageBody) {
+        todoPageBody.style.paddingBottom = '100px';
+    }
 }
 
 // Добавление одной задачи без анимации для существующих
@@ -340,27 +354,28 @@ function setupMobileKeyboard() {
     
     // Обработчик фокуса на инпуте
     todoInput.addEventListener('focus', function() {
-        // Небольшая задержка для корректного определения высоты клавиатуры
-        setTimeout(() => {
-            // Поднимаем инпут на уровень клавиатуры
-            inputContainer.style.position = 'fixed';
-            inputContainer.style.bottom = '0px';
-            inputContainer.style.transform = 'translateY(0)';
-            
-            // Добавляем дополнительный отступ снизу для контента
-            const todoPageBody = document.querySelector('.todo-page-body');
-            if (todoPageBody) {
-                todoPageBody.style.paddingBottom = '120px';
-            }
-        }, 300);
+        // Фиксируем инпут внизу экрана без поднятия
+        inputContainer.style.position = 'fixed';
+        inputContainer.style.bottom = '0px';
+        inputContainer.style.transform = 'translateY(0)';
+        inputContainer.style.zIndex = '1000';
+        
+        // Предотвращаем скролл страницы
+        document.body.style.overflow = 'hidden';
+        document.body.style.height = '100vh';
+        
+        // Добавляем отступ для контента
+        const todoPageBody = document.querySelector('.todo-page-body');
+        if (todoPageBody) {
+            todoPageBody.style.paddingBottom = '120px';
+        }
     });
     
     // Обработчик потери фокуса
     todoInput.addEventListener('blur', function() {
-        // Возвращаем инпут в исходное положение
-        inputContainer.style.position = 'fixed';
-        inputContainer.style.bottom = '0px';
-        inputContainer.style.transform = 'translateY(0)';
+        // Возвращаем скролл страницы
+        document.body.style.overflow = '';
+        document.body.style.height = '';
         
         // Возвращаем обычный отступ для контента
         const todoPageBody = document.querySelector('.todo-page-body');
