@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Веб приложение</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+    
+    <!-- Сердечки для анимации -->
+    <div class="hearts">
+        <div class="heart">💕</div>
+        <div class="heart">💖</div>
+        <div class="heart">💝</div>
+        <div class="heart">💗</div>
+        <div class="heart">💓</div>
+        <div class="heart">💕</div>
+        <div class="heart">💖</div>
+        <div class="heart">💝</div>
+        <div class="heart">💗</div>
+        <div class="heart">💓</div>
+        <div class="heart">💕</div>
+        <div class="heart">💖</div>
+        <div class="heart">💝</div>
+        <div class="heart">💗</div>
+        <div class="heart">💓</div>
+    </div>
+    <div class="container">
+        <div class="header-card">
+            <h2>Привет, Кисуня!</h2>
+            <p>Это приложение создано специально для тебя</p>
+            
+            
+            <div class="weather-section">
+                <h3>Погода на сегодня</h3>
+                <div class="weather-info">
+                    <div class="weather-left">
+                        <div class="weather-icon" id="weatherIcon">☀️</div>
+                        <div class="weather-text">
+                            <span class="weather-city">Владивосток</span>
+                            <span class="weather-desc" id="weatherDesc"></span>
+                        </div>
+                    </div>
+                    <span class="weather-temp" id="weatherTemp">
+                        <div class="weather-loader">
+                            <div class="loader-dot"></div>
+                            <div class="loader-dot"></div>
+                            <div class="loader-dot"></div>
+                        </div>
+                    </span>
+                </div>
+            </div>
+            
+            <h3 class="todo-stats-title">Твои задачи</h3>
+            <div class="todo-stats" id="mainTodoStats">
+                <div class="stats-content">
+                    <div class="stats-item">
+                        <span class="stats-number" id="totalTasks">0</span>
+                        <span class="stats-label">всего</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-number" id="completedTasks">0</span>
+                        <span class="stats-label">выполнено</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-number" id="activeTasks">0</span>
+                        <span class="stats-label">активных</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-card" id="goToChatBtn">
+            <div class="chat-content">
+                <h3>👨‍💼 Твой помощник</h3>
+                <p>Готов ответить на вопросы и передать заботу от Вовы</p>
+            </div>
+            <div class="chat-arrow">
+                <span class="material-icons">arrow_forward_ios</span>
+            </div>
+        </div>
+        
+    <div class="todo-card" id="goToTodoBtn">
+        <div class="todo-content">
+            <h3>📝 Записная книжка</h3>
+            <p>Организуй свои дела и планы</p>
+        </div>
+        <div class="todo-arrow">
+            <span class="material-icons">arrow_forward_ios</span>
+        </div>
+    </div>
+    
+    <div class="compliments-card">
+        <h2>Комплименты от Вовы ❤️</h2>
+        <p id="complimentText">Катя, ты самая красивая девушка на свете! 💕</p>
+        <div class="compliments-buttons">
+            <button id="newComplimentBtn" class="compliment-btn">Еще один комплимент</button>
+        </div>
+    </div>
+    </div>
+    
+    
+    <!-- Модальное окно инструкций -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Как пользоваться аккордеоном</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>👆 <strong>Кликни на "Разверни"</strong> - чтобы открыть аккордеон и увидеть комплимент от Вовы</p>
+                <p>💕 <strong>Кнопка "Новый комплимент"</strong> - для получения нового романтического комплимента</p>
+                <p>ℹ️ <strong>Кнопка "Информация"</strong> - для получения дополнительной информации</p>
+                <p>✨ <strong>Каждый раз</strong> - случайный романтический комплимент!</p>
+                <p>💖 <strong>Наслаждайся</strong> - милыми словами от твоего Вовы!</p>
+            </div>
+            <div class="modal-footer">
+                <button id="modalClose" class="btn">Понятно!</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Информационное модальное окно -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Информация о приложении</h3>
+                <span class="close-info">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>🎨 <strong>Дизайн:</strong> Современный градиентный фон с анимированными частицами</p>
+                <p>💝 <strong>Комплименты:</strong> 15 уникальных романтических сообщений от Вовы</p>
+                <p>📱 <strong>Адаптивность:</strong> Работает на всех устройствах - от телефона до компьютера</p>
+                <p>⚡ <strong>Технологии:</strong> HTML5, CSS3, JavaScript с плавными анимациями</p>
+                <p>🎯 <strong>Цель:</strong> Сделать Катю счастливой каждый день!</p>
+                <p>💌 <strong>Создано с любовью</strong> специально для тебя, Катя!</p>
+            </div>
+            <div class="modal-footer">
+                <button id="infoModalClose" class="btn">Спасибо! 💕</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

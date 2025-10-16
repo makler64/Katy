@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чат с помощником - Катя</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Частицы для анимации фона -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+    
+    <!-- Сердечки для анимации -->
+    <div class="hearts">
+        <div class="heart">💕</div>
+        <div class="heart">💖</div>
+        <div class="heart">💝</div>
+        <div class="heart">💗</div>
+        <div class="heart">💓</div>
+        <div class="heart">💕</div>
+        <div class="heart">💖</div>
+        <div class="heart">💝</div>
+        <div class="heart">💗</div>
+        <div class="heart">💓</div>
+        <div class="heart">💕</div>
+        <div class="heart">💖</div>
+        <div class="heart">💝</div>
+        <div class="heart">💗</div>
+        <div class="heart">💓</div>
+    </div>
+    
+    <!-- Кнопка возврата -->
+    <div class="back-button-container">
+        <button id="backBtn" class="back-btn">
+            <span class="material-icons">arrow_back</span>
+            Назад
+        </button>
+    </div>
+    
+    <!-- Чат -->
+    <div class="chat-page">
+        <div class="chat-header">
+            <div class="ai-icon">👨‍💼</div>
+            <h2>Твой помощник</h2>
+            <div class="chat-status">Онлайн</div>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message ai-message">
+                <div class="message-avatar">В</div>
+                <div class="message-content">
+                    <p>Привет, Катя! Вова попросил меня быть твоим помощником. Я здесь, чтобы помочь тебе с любыми вопросами и передать его заботу! 😊</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Быстрые вопросы -->
+        <div class="quick-questions">
+            <div class="quick-question" data-question="Привет! Как дела?">Привет! Как дела?</div>
+            <div class="quick-question" data-question="Что делаешь сейчас?">Что делаешь сейчас?</div>
+            <div class="quick-question" data-question="Расскажи что-нибудь интересное">Расскажи что-нибудь интересное</div>
+            <div class="quick-question" data-question="Как настроение?">Как настроение?</div>
+            <div class="quick-question" data-question="Что планируешь на сегодня?">Что планируешь на сегодня?</div>
+            <div class="quick-question" data-question="Как прошел день?">Как прошел день?</div>
+            <div class="quick-question" data-question="Хочешь поговорить?">Хочешь поговорить?</div>
+        </div>
+        
+        <div class="chat-input-container">
+            <input type="text" id="chatInput" placeholder="Напиши что-нибудь..." maxlength="200">
+            <button id="sendBtn" class="send-btn">
+                <span class="material-icons">send</span>
+            </button>
+        </div>
+    </div>
+    
+    <script src="chat.js"></script>
+</body>
+</html>
