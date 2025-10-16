@@ -1897,8 +1897,8 @@ html {
 .todo-modal .modal-content {
     max-width: 600px;
     width: 100%;
-    height: 100vh; /* Полная высота экрана */
-    max-height: 100vh;
+    height: calc(100vh - 40px); /* Уменьшаем высоту на 40px */
+    max-height: calc(100vh - 40px);
     display: flex;
     flex-direction: column;
     border-radius: 20px 20px 0 0;
@@ -1907,7 +1907,7 @@ html {
     transition: transform 0.3s ease-out;
     animation: none; /* Отключаем старую анимацию */
     padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 20px); /* Добавляем отступ снизу */
     padding-left: env(safe-area-inset-left, 0px);
     padding-right: env(safe-area-inset-right, 0px);
 }
@@ -2149,7 +2149,7 @@ html {
     display: flex;
     gap: 10px;
     align-items: center;
-    padding: 15px 30px;
+    padding: 15px 30px 20px 30px; /* Увеличиваем нижний отступ */
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     border-top: 1px solid #e9ecef;
@@ -2224,10 +2224,11 @@ html {
     .todo-modal .modal-content {
         width: 100%;
         max-width: 100%;
-        height: 100vh;
-        max-height: 100vh;
+        height: calc(100vh - 60px); /* Больше отступ для мобильных браузеров */
+        max-height: calc(100vh - 60px);
         margin: 0;
         border-radius: 20px 20px 0 0;
+        padding-bottom: env(safe-area-inset-bottom, 30px); /* Увеличиваем отступ снизу */
     }
     
     .todo-modal-body {
@@ -2240,7 +2241,7 @@ html {
     }
     
     .todo-modal .todo-input-container-fixed {
-        padding: 12px 20px;
+        padding: 12px 20px 25px 20px; /* Увеличиваем нижний отступ */
     }
     
     .todo-modal .section-title {
@@ -2312,10 +2313,11 @@ html {
     .todo-modal .modal-content {
         width: 100%;
         max-width: 100%;
-        height: 100vh;
-        max-height: 100vh;
+        height: calc(100vh - 80px); /* Еще больше отступ для маленьких экранов */
+        max-height: calc(100vh - 80px);
         margin: 0;
         border-radius: 15px 15px 0 0;
+        padding-bottom: env(safe-area-inset-bottom, 40px); /* Максимальный отступ снизу */
     }
     
     .todo-modal-body {
@@ -2328,7 +2330,7 @@ html {
     }
     
     .todo-modal .todo-input-container-fixed {
-        padding: 10px 15px;
+        padding: 10px 15px 30px 15px; /* Максимальный нижний отступ */
     }
     
     .todo-modal .todo-list {
