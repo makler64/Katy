@@ -1902,6 +1902,37 @@ body.modal-open {
     height: 100%;
 }
 
+/* Адаптация инпута к клавиатуре */
+.todo-modal .todo-input-container-fixed.keyboard-open {
+    position: fixed !important;
+    bottom: 20px !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 !important;
+    z-index: 1001 !important;
+    transform: translateY(0) !important;
+    transition: all 0.3s ease !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(15px) !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Специальные стили для iOS */
+@supports (-webkit-touch-callout: none) {
+    .todo-modal .todo-input-container-fixed.keyboard-open {
+        bottom: 15px !important;
+        padding: 12px 20px 20px 20px !important;
+    }
+    
+    /* Дополнительная адаптация для iPhone */
+    @media (max-width: 480px) {
+        .todo-modal .todo-input-container-fixed.keyboard-open {
+            bottom: 10px !important;
+            padding: 10px 15px 15px 15px !important;
+        }
+    }
+}
+
 .todo-modal .modal-content {
     max-width: 600px;
     width: 100%;
@@ -1971,6 +2002,16 @@ body.modal-open {
     flex: 1;
     overflow-y: auto;
     padding-bottom: 20px;
+}
+
+/* Когда инпут перемещен, увеличиваем высоту секций */
+.todo-modal .modal-content:has(.todo-input-container-fixed.keyboard-open) .todo-sections-container {
+    padding-bottom: 80px; /* Дополнительное место для перемещенного инпута */
+}
+
+/* Альтернативный способ для браузеров без поддержки :has() */
+.todo-modal.keyboard-open .todo-sections-container {
+    padding-bottom: 80px;
 }
 
 .todo-modal .todo-section {

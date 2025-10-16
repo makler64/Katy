@@ -641,6 +641,31 @@ function initializeTodoModal() {
                 addTodo();
             }
         });
+        
+        // Обработка появления клавиатуры
+        todoInput.addEventListener('focus', function() {
+            console.log('Input focused, adjusting input position');
+        setTimeout(() => {
+                const inputContainer = todoModal.querySelector('.todo-input-container-fixed');
+                if (inputContainer) {
+                    // Добавляем класс для адаптации инпута к клавиатуре
+                    inputContainer.classList.add('keyboard-open');
+                    todoModal.classList.add('keyboard-open'); // Для совместимости с CSS
+                }
+            }, 300); // Даем время клавиатуре появиться
+        });
+        
+        todoInput.addEventListener('blur', function() {
+            console.log('Input blurred, restoring input position');
+        setTimeout(() => {
+                const inputContainer = todoModal.querySelector('.todo-input-container-fixed');
+                if (inputContainer) {
+                    // Убираем класс адаптации инпута к клавиатуре
+                    inputContainer.classList.remove('keyboard-open');
+                    todoModal.classList.remove('keyboard-open'); // Для совместимости с CSS
+                }
+            }, 300); // Даем время клавиатуре скрыться
+        });
     }
 
     // Закрытие по клику вне модального окна
@@ -665,6 +690,31 @@ function initializeTodoModal() {
         if (e.ctrlKey && e.key === 'Enter' && todoModal && todoModal.classList.contains('show')) {
             e.preventDefault();
             addTodo();
+        }
+    });
+
+    // Обработка изменения размера окна (для клавиатуры)
+    let initialViewportHeight = window.innerHeight;
+    window.addEventListener('resize', function() {
+        const currentViewportHeight = window.innerHeight;
+        const heightDifference = initialViewportHeight - currentViewportHeight;
+        
+        // Если высота уменьшилась более чем на 150px, вероятно появилась клавиатура
+        if (heightDifference > 150 && todoModal && todoModal.classList.contains('show')) {
+            console.log('Keyboard detected, adjusting input');
+            const inputContainer = todoModal.querySelector('.todo-input-container-fixed');
+            if (inputContainer) {
+                inputContainer.classList.add('keyboard-open');
+                todoModal.classList.add('keyboard-open'); // Для совместимости с CSS
+            }
+        } else if (heightDifference < 100 && todoModal && todoModal.classList.contains('show')) {
+            // Если высота восстановилась, убираем адаптацию
+            console.log('Keyboard hidden, restoring input');
+            const inputContainer = todoModal.querySelector('.todo-input-container-fixed');
+            if (inputContainer) {
+                inputContainer.classList.remove('keyboard-open');
+                todoModal.classList.remove('keyboard-open'); // Для совместимости с CSS
+            }
         }
     });
 
