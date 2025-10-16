@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Веб приложение</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -175,6 +175,46 @@
             </div>
             <div class="modal-footer">
                 <button id="infoModalClose" class="btn">Спасибо! 💕</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Todo попап -->
+    <div id="todoModal" class="modal todo-modal">
+        <div class="modal-content todo-modal-content">
+            <!-- Индикатор перетаскивания -->
+            <div class="modal-drag-indicator"></div>
+            <div class="modal-header">
+                <h3>📝 Записная книжка</h3>
+                <span class="close-todo">&times;</span>
+            </div>
+            <div class="modal-body todo-modal-body">
+                <!-- Контейнер для секций задач -->
+                <div class="todo-sections-container">
+                    <!-- Актуальные задачи -->
+                    <div class="todo-section">
+                        <h4 class="section-title">Актуальные <span class="section-count" id="activeCount">0</span></h4>
+                        <div class="todo-list" id="activeTodoList">
+                            <!-- Активные задачи будут добавлены здесь -->
+                        </div>
+                    </div>
+                    
+                    <!-- Завершенные задачи -->
+                    <div class="todo-section">
+                        <h4 class="section-title">Завершенные <span class="section-count" id="completedCount">0</span></h4>
+                        <div class="todo-list" id="completedTodoList">
+                            <!-- Завершенные задачи будут добавлены здесь -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Поле ввода для новой задачи (закреплено внизу) -->
+            <div class="todo-input-container-fixed">
+                <input type="text" id="todoInput" placeholder="Добавить новую задачу... (Ctrl+Enter)" maxlength="100">
+                <button id="addTodoBtn" class="add-todo-btn">
+                    <span class="material-icons">add</span>
+                </button>
             </div>
         </div>
     </div>

@@ -1357,6 +1357,14 @@ html {
     align-items: center;
 }
 
+/* Специальная анимация для todo модального окна */
+.todo-modal.show {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    animation: fadeIn 0.3s ease; /* Анимация появления фона */
+}
+
 .modal-content {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 20px;
@@ -1367,6 +1375,11 @@ html {
     overflow-y: auto;
     animation: slideIn 0.3s ease;
     backdrop-filter: blur(10px);
+}
+
+/* Отключаем старую анимацию для todo модального окна */
+.todo-modal .modal-content {
+    animation: none;
 }
 
 .modal-header {
@@ -1390,12 +1403,41 @@ html {
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
     user-select: none;
 }
 
 .close:hover {
     color: #ff6b6b;
+}
+
+/* Специальные стили для крестика в todo модальном окне */
+.todo-modal .close-todo {
+    color: #666;
+    font-size: 32px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.todo-modal .close-todo:hover {
+    color: #ff6b6b;
+    background: rgba(255, 107, 107, 0.1);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.2);
+}
+
+.todo-modal .close-todo:active {
+    transform: scale(0.95);
 }
 
 .modal-body {
@@ -1842,6 +1884,503 @@ html {
     }
     
     
+}
+
+/* Стили для todo попапа */
+.todo-modal {
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+    animation: none; /* Отключаем fadeIn анимацию */
+}
+
+.todo-modal .modal-content {
+    max-width: 600px;
+    width: 100%;
+    height: 100vh; /* Полная высота экрана */
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px 20px 0 0;
+    margin: 0;
+    transform: translateY(100%);
+    transition: transform 0.3s ease-out;
+    animation: none; /* Отключаем старую анимацию */
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* Для больших экранов ограничиваем высоту */
+@media (min-width: 769px) {
+    .todo-modal .modal-content {
+        max-height: 90vh;
+        height: auto;
+        margin: 20px auto;
+        border-radius: 20px;
+    }
+}
+
+.todo-modal.show .modal-content {
+    transform: translateY(0);
+}
+
+/* Индикатор перетаскивания */
+.modal-drag-indicator {
+    width: 40px;
+    height: 4px;
+    background: #ccc;
+    border-radius: 2px;
+    margin: 8px auto;
+    cursor: grab;
+    transition: background-color 0.3s ease;
+}
+
+.modal-drag-indicator:hover {
+    background: #999;
+}
+
+.modal-drag-indicator:active {
+    cursor: grabbing;
+}
+
+.todo-modal-body {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 30px 0 30px;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.todo-sections-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 20px;
+}
+
+.todo-modal .todo-section {
+    margin-bottom: 20px;
+}
+
+.todo-modal .section-title {
+    color: #333;
+    font-size: 1.1em;
+    font-weight: 600;
+    margin: 0 0 15px 0;
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.todo-modal .section-title::after {
+    display: none;
+}
+
+.todo-modal .section-count {
+    background: #ff6b9d;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.8em;
+    font-weight: 500;
+    margin-left: auto;
+}
+
+.todo-modal .todo-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-height: 100px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.todo-modal .todo-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    margin-bottom: 5px;
+}
+
+.todo-modal .todo-item.completed {
+    background: #e8f5e8;
+    border-color: #4caf50;
+    opacity: 0.8;
+}
+
+.todo-modal .todo-item.completed .todo-text {
+    text-decoration: line-through;
+    color: #666;
+}
+
+.todo-modal .todo-checkbox-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.todo-modal .todo-checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #6c757d;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    background: white;
+    margin: 0;
+}
+
+.todo-modal .todo-checkbox:checked {
+    background: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+
+.todo-modal .todo-checkbox:checked::after {
+    content: '✓';
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.todo-modal .todo-text {
+    flex: 1;
+    font-size: 0.95em;
+    color: #333;
+    line-height: 1.4;
+    font-weight: 400;
+    word-wrap: break-word;
+}
+
+.todo-modal .todo-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.todo-modal .todo-edit, 
+.todo-modal .todo-duplicate, 
+.todo-modal .todo-delete {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    transition: all 0.3s ease;
+}
+
+.todo-modal .todo-edit:hover {
+    background: #e3f2fd;
+    border-color: #2196f3;
+    color: #1976d2;
+}
+
+.todo-modal .todo-duplicate:hover {
+    background: #fff3e0;
+    border-color: #ff9800;
+    color: #f57c00;
+}
+
+.todo-modal .todo-delete:hover {
+    background: #ffebee;
+    border-color: #f44336;
+    color: #d32f2f;
+}
+
+.todo-modal .todo-edit .material-icons,
+.todo-modal .todo-duplicate .material-icons,
+.todo-modal .todo-delete .material-icons {
+    font-size: 14px;
+}
+
+.todo-modal .todo-save {
+    background: #28a745 !important;
+    border: 1px solid #28a745 !important;
+    color: white !important;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    transition: all 0.3s ease;
+}
+
+.todo-modal .todo-save:hover {
+    background: #218838 !important;
+    border-color: #1e7e34 !important;
+    transform: scale(1.05);
+}
+
+.todo-modal .todo-save .material-icons {
+    font-size: 14px;
+}
+
+.todo-modal .todo-input-container-fixed {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 15px 30px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid #e9ecef;
+    flex-shrink: 0;
+    margin-top: auto;
+}
+
+.todo-modal #todoInput {
+    flex: 1;
+    padding: 12px 15px;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-family: 'Montserrat', sans-serif;
+    background: white;
+    transition: all 0.3s ease;
+    margin: 0 10px;
+}
+
+.todo-modal #todoInput:focus {
+    border-color: #ff6b6b;
+    box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+    outline: none;
+}
+
+.todo-modal #todoInput::placeholder {
+    color: #adb5bd;
+}
+
+.todo-modal .add-todo-btn {
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    margin-right: 10px;
+}
+
+.todo-modal .add-todo-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(255, 107, 107, 0.3);
+}
+
+.todo-modal .add-todo-btn:active {
+    transform: translateY(0);
+}
+
+.todo-modal .add-todo-btn .material-icons {
+    font-size: 18px;
+}
+
+.todo-modal .empty-todos {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 30px 20px;
+    font-size: 1em;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px dashed #dee2e6;
+}
+
+/* Адаптивные стили для todo попапа */
+@media (max-width: 768px) {
+    .todo-modal .modal-content {
+        width: 100%;
+        max-width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        margin: 0;
+        border-radius: 20px 20px 0 0;
+    }
+    
+    .todo-modal-body {
+        padding: 15px 20px 0 20px;
+    }
+    
+    .todo-sections-container {
+        gap: 15px;
+        padding-bottom: 15px;
+    }
+    
+    .todo-modal .todo-input-container-fixed {
+        padding: 12px 20px;
+    }
+    
+    .todo-modal .section-title {
+        font-size: 1em;
+        margin-bottom: 12px;
+    }
+    
+    .todo-modal .todo-list {
+        max-height: 250px;
+    }
+    
+    .todo-modal .todo-item {
+        padding: 10px 12px;
+        gap: 10px;
+    }
+    
+    .todo-modal .todo-text {
+        font-size: 0.9em;
+    }
+    
+    .todo-modal .todo-actions {
+        gap: 4px;
+    }
+    
+    .todo-modal .todo-edit, 
+    .todo-modal .todo-duplicate, 
+    .todo-modal .todo-delete,
+    .todo-modal .todo-save {
+        width: 26px;
+        height: 26px;
+        padding: 5px;
+    }
+    
+    .todo-modal .todo-edit .material-icons,
+    .todo-modal .todo-duplicate .material-icons,
+    .todo-modal .todo-delete .material-icons,
+    .todo-modal .todo-save .material-icons {
+        font-size: 13px;
+    }
+    
+    .todo-modal .todo-input-container {
+        padding: 12px 0;
+    }
+    
+    .todo-modal #todoInput {
+        margin: 0 8px;
+        padding: 10px 12px;
+        font-size: 0.9em;
+    }
+    
+    .todo-modal .add-todo-btn {
+        min-width: 32px;
+        height: 32px;
+        margin-right: 8px;
+    }
+    
+    .todo-modal .add-todo-btn .material-icons {
+        font-size: 16px;
+    }
+    
+    .todo-modal .close-todo {
+        width: 36px;
+        height: 36px;
+        font-size: 28px;
+    }
+}
+
+@media (max-width: 480px) {
+    .todo-modal .modal-content {
+        width: 100%;
+        max-width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        margin: 0;
+        border-radius: 15px 15px 0 0;
+    }
+    
+    .todo-modal-body {
+        padding: 12px 15px 0 15px;
+    }
+    
+    .todo-sections-container {
+        gap: 12px;
+        padding-bottom: 12px;
+    }
+    
+    .todo-modal .todo-input-container-fixed {
+        padding: 10px 15px;
+    }
+    
+    .todo-modal .todo-list {
+        max-height: 200px;
+    }
+    
+    .todo-modal .todo-item {
+        padding: 8px 10px;
+        gap: 8px;
+    }
+    
+    .todo-modal .todo-text {
+        font-size: 0.85em;
+    }
+    
+    .todo-modal .todo-edit, 
+    .todo-modal .todo-duplicate, 
+    .todo-modal .todo-delete,
+    .todo-modal .todo-save {
+        width: 24px;
+        height: 24px;
+        padding: 4px;
+    }
+    
+    .todo-modal .todo-edit .material-icons,
+    .todo-modal .todo-duplicate .material-icons,
+    .todo-modal .todo-delete .material-icons,
+    .todo-modal .todo-save .material-icons {
+        font-size: 12px;
+    }
+    
+    .todo-modal #todoInput {
+        margin: 0 6px;
+        padding: 8px 10px;
+        font-size: 0.85em;
+    }
+    
+    .todo-modal .add-todo-btn {
+        min-width: 28px;
+        height: 28px;
+        margin-right: 6px;
+    }
+    
+    .todo-modal .add-todo-btn .material-icons {
+        font-size: 14px;
+    }
+    
+    .todo-modal .close-todo {
+        width: 32px;
+        height: 32px;
+        font-size: 24px;
+    }
 }
 
 

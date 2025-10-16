@@ -179,6 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Блок перехода к todo-листу
     const goToTodoBtn = document.getElementById('goToTodoBtn');
+    console.log('goToTodoBtn found:', !!goToTodoBtn);
     
     // Функция загрузки погоды
     async function loadWeather() {
@@ -315,65 +316,464 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 5000);
     
     
-    // Переход к todo-листу
+    // Инициализация todo функциональности
+    initializeTodoModal();
+    
+    // Переход к todo-листу (открытие попапа)
+    if (goToTodoBtn) {
+        console.log('Adding click listener to goToTodoBtn');
     goToTodoBtn.addEventListener('click', () => {
         // Анимация нажатия
         goToTodoBtn.style.transform = 'scale(0.98)';
         
-        // Создаем прелоадер
-        const preloader = document.createElement('div');
-        preloader.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #ff6b6b, #ff8e8e, #ffa8a8);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        `;
-        
-        // Создаем анимированный спиннер
-        const spinner = document.createElement('div');
-        spinner.style.cssText = `
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        `;
-        
-        // Создаем текст загрузки
-        const loadingText = document.createElement('div');
-        loadingText.textContent = 'Переходим к записям...';
-        loadingText.style.cssText = `
-            color: white;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.2em;
-            font-weight: 500;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        `;
-        
-        preloader.appendChild(spinner);
-        preloader.appendChild(loadingText);
-        document.body.appendChild(preloader);
-        
-        // Показываем прелоадер
+        // Возвращаем кнопку в исходное состояние
         setTimeout(() => {
-            preloader.style.opacity = '1';
-        }, 10);
+            goToTodoBtn.style.transform = 'scale(1)';
+        }, 150);
         
-        // Переход на страницу todo
-        setTimeout(() => {
-            window.location.href = 'todo.html';
-        }, 1500);
-    });
-    
+        // Открываем попап todo
+        console.log('Button clicked, trying to open modal...');
+        if (window.openTodoModal) {
+            window.openTodoModal();
+        } else {
+            console.error('openTodoModal function not found');
+            // Альтернативный способ открытия
+            const modal = document.getElementById('todoModal');
+            if (modal) {
+                console.log('Opening modal directly...');
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            } else {
+                console.error('Modal element not found');
+            }
+        }
+        });
+    } else {
+        console.error('goToTodoBtn element not found');
+    }
 });
+
+// Todo функциональность
+let todos = JSON.parse(localStorage.getItem('todos')) || [];
+
+// Инициализация todo модального окна
+function initializeTodoModal() {
+    const todoModal = document.getElementById('todoModal');
+    const closeTodoBtn = document.querySelector('.close-todo');
+    const todoInput = document.getElementById('todoInput');
+    const addTodoBtn = document.getElementById('addTodoBtn');
+    const activeTodoList = document.getElementById('activeTodoList');
+    const completedTodoList = document.getElementById('completedTodoList');
+    const activeCount = document.getElementById('activeCount');
+    const completedCount = document.getElementById('completedCount');
+
+    // Проверяем, что все элементы найдены
+    console.log('Todo modal elements:', {
+        todoModal: !!todoModal,
+        closeTodoBtn: !!closeTodoBtn,
+        todoInput: !!todoInput,
+        addTodoBtn: !!addTodoBtn,
+        activeTodoList: !!activeTodoList,
+        completedTodoList: !!completedTodoList,
+        activeCount: !!activeCount,
+        completedCount: !!completedCount
+    });
+
+    // Функции для работы с todo
+    function renderTodos() {
+        if (!activeTodoList || !completedTodoList) return;
+        
+        activeTodoList.innerHTML = '';
+        completedTodoList.innerHTML = '';
+        
+        const activeTodos = todos.filter(todo => !todo.completed);
+        const completedTodos = todos.filter(todo => todo.completed);
+        
+        // Обновляем счетчики
+        if (activeCount) activeCount.textContent = activeTodos.length;
+        if (completedCount) completedCount.textContent = completedTodos.length;
+        
+        // Отрисовка активных задач
+        if (activeTodos.length === 0) {
+            activeTodoList.innerHTML = '<div class="empty-todos">Нет активных задач</div>';
+        } else {
+            activeTodos.forEach((todo, index) => {
+                const actualIndex = todos.findIndex(t => t.id === todo.id);
+                createTodoItem(todo, actualIndex, activeTodoList);
+            });
+        }
+        
+        // Отрисовка завершенных задач
+        if (completedTodos.length === 0) {
+            completedTodoList.innerHTML = '<div class="empty-todos">Нет завершенных задач</div>';
+        } else {
+            completedTodos.forEach((todo, index) => {
+                const actualIndex = todos.findIndex(t => t.id === todo.id);
+                createTodoItem(todo, actualIndex, completedTodoList);
+            });
+        }
+        
+        // Обновляем статистику на главной странице
+        updateTodoStats();
+    }
+
+    function createTodoItem(todo, index, container) {
+        const todoItem = document.createElement('div');
+        todoItem.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+        todoItem.style.opacity = '0';
+        todoItem.style.transform = 'translateY(20px)';
+        
+        todoItem.innerHTML = `
+            <label class="todo-checkbox-container">
+                <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''}>
+            </label>
+            <span class="todo-text">${todo.text}</span>
+            <div class="todo-actions">
+                <button class="todo-edit" title="Редактировать">
+                    <span class="material-icons">edit</span>
+                </button>
+                <button class="todo-duplicate" title="Дублировать">
+                    <span class="material-icons">content_copy</span>
+                </button>
+                <button class="todo-delete" title="Удалить">
+                    <span class="material-icons">delete</span>
+                </button>
+            </div>
+        `;
+        
+        // Обработчик изменения статуса задачи
+        const checkbox = todoItem.querySelector('.todo-checkbox');
+        checkbox.addEventListener('change', () => toggleTodo(index));
+        
+        // Обработчики кнопок действий
+        const editBtn = todoItem.querySelector('.todo-edit');
+        const duplicateBtn = todoItem.querySelector('.todo-duplicate');
+        const deleteBtn = todoItem.querySelector('.todo-delete');
+        
+        editBtn.addEventListener('click', () => editTodo(index));
+        duplicateBtn.addEventListener('click', () => duplicateTodo(index));
+        deleteBtn.addEventListener('click', () => deleteTodo(index));
+        
+        container.appendChild(todoItem);
+        
+        // Анимация появления
+        setTimeout(() => {
+            todoItem.style.transition = 'all 0.3s ease';
+            todoItem.style.opacity = '1';
+            todoItem.style.transform = 'translateY(0)';
+        }, 50);
+    }
+
+    function addTodo() {
+        if (!todoInput) return;
+        
+        const text = todoInput.value.trim();
+        if (text === '') return;
+        
+        const newTodo = {
+            text: text,
+            completed: false,
+            id: Date.now()
+        };
+        
+        todos.unshift(newTodo);
+        saveTodos();
+        renderTodos();
+        
+        // Очистка поля ввода
+        todoInput.value = '';
+        todoInput.blur();
+    }
+
+    function toggleTodo(index) {
+        if (index < 0 || index >= todos.length) return;
+        
+        todos[index].completed = !todos[index].completed;
+        saveTodos();
+        renderTodos();
+    }
+
+    function deleteTodo(index) {
+        if (index < 0 || index >= todos.length) return;
+        
+        todos.splice(index, 1);
+        saveTodos();
+        renderTodos();
+    }
+
+    function editTodo(index) {
+        if (index < 0 || index >= todos.length) return;
+        
+        // Находим элемент в DOM
+        const allTodoItems = [...activeTodoList.querySelectorAll('.todo-item'), ...completedTodoList.querySelectorAll('.todo-item')];
+        const todoItem = allTodoItems.find(item => {
+            const todoText = item.querySelector('.todo-text');
+            return todoText && todoText.textContent.trim() === todos[index].text;
+        });
+        
+        if (!todoItem) return;
+        
+        const todoText = todoItem.querySelector('.todo-text');
+        const currentTodo = todos[index];
+        const currentText = currentTodo.text;
+        
+        // Создаем поле ввода
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = currentText;
+        input.className = 'todo-edit-input';
+        input.style.cssText = `
+            flex: 1;
+            padding: 8px 12px;
+            border: 2px solid #6c757d;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: 'Montserrat', sans-serif;
+            outline: none;
+            background: white;
+            margin: 0;
+            width: 100%;
+            box-sizing: border-box;
+        `;
+        
+        // Скрываем кнопки действий и заменяем на кнопку сохранения
+        const todoActions = todoItem.querySelector('.todo-actions');
+        const originalActions = todoActions.innerHTML;
+        
+        // Создаем кнопку сохранения
+        const saveButton = document.createElement('button');
+        saveButton.className = 'todo-save';
+        saveButton.innerHTML = '<span class="material-icons">check</span>';
+        saveButton.title = 'Сохранить';
+        saveButton.style.cssText = `
+            background: #28a745;
+            border: 1px solid #28a745;
+            color: white;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            transition: all 0.3s ease;
+        `;
+        
+        // Заменяем кнопки на кнопку сохранения
+        todoActions.innerHTML = '';
+        todoActions.appendChild(saveButton);
+        
+        // Заменяем текст на поле ввода
+        todoText.style.display = 'none';
+        todoText.parentNode.insertBefore(input, todoText);
+        input.focus();
+        input.select();
+        
+        // Обработчики событий
+        const saveEdit = () => {
+            const newText = input.value.trim();
+            if (newText && newText !== currentText) {
+                todos[index].text = newText;
+                saveTodos();
+                todoText.textContent = newText;
+            }
+            input.remove();
+            todoText.style.display = 'block';
+            todoActions.innerHTML = originalActions;
+            updateTodoStats();
+        };
+        
+        const cancelEdit = () => {
+            input.remove();
+            todoText.style.display = 'block';
+            todoActions.innerHTML = originalActions;
+        };
+        
+        // Обработчик клика по кнопке сохранения
+        saveButton.addEventListener('click', saveEdit);
+        
+        input.addEventListener('blur', saveEdit);
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                saveEdit();
+            } else if (e.key === 'Escape') {
+                cancelEdit();
+            }
+        });
+    }
+
+    function duplicateTodo(index) {
+        if (index < 0 || index >= todos.length) return;
+        
+        const originalTodo = todos[index];
+        const duplicatedTodo = {
+            ...originalTodo,
+            text: originalTodo.text + ' (копия)',
+            id: Date.now(),
+            completed: false
+        };
+        
+        todos.unshift(duplicatedTodo);
+        saveTodos();
+        renderTodos();
+    }
+
+    function saveTodos() {
+        localStorage.setItem('todos', JSON.stringify(todos));
+    }
+
+    // Обработчики событий
+    if (closeTodoBtn) {
+        closeTodoBtn.addEventListener('click', () => {
+            window.closeTodoModal();
+        });
+    }
+
+    if (addTodoBtn) {
+        addTodoBtn.addEventListener('click', addTodo);
+    }
+
+    if (todoInput) {
+        todoInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTodo();
+            }
+        });
+    }
+
+    // Закрытие по клику вне модального окна
+    if (todoModal) {
+        todoModal.addEventListener('click', (e) => {
+            if (e.target === todoModal) {
+                window.closeTodoModal();
+            }
+        });
+    }
+
+    // Закрытие по Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && todoModal && todoModal.classList.contains('show')) {
+            window.closeTodoModal();
+        }
+    });
+
+    // Горячие клавиши
+    document.addEventListener('keydown', function(e) {
+        // Ctrl + Enter - добавить задачу (только когда попап открыт)
+        if (e.ctrlKey && e.key === 'Enter' && todoModal && todoModal.classList.contains('show')) {
+            e.preventDefault();
+            addTodo();
+        }
+    });
+
+    // Инициализация отрисовки
+    renderTodos();
+
+    // Функция для обработки свайпов
+    function setupSwipeToClose() {
+        const modalContent = document.querySelector('.todo-modal .modal-content');
+        const dragIndicator = document.querySelector('.modal-drag-indicator');
+        
+        if (!modalContent || !dragIndicator) return;
+        
+        let startY = 0;
+        let currentY = 0;
+        let isDragging = false;
+        
+        // Обработчики для индикатора перетаскивания
+        dragIndicator.addEventListener('mousedown', startDrag);
+        dragIndicator.addEventListener('touchstart', startDrag);
+        
+        function startDrag(e) {
+            isDragging = true;
+            startY = e.type === 'mousedown' ? e.clientY : e.touches[0].clientY;
+            modalContent.style.transition = 'none';
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchmove', drag);
+            document.addEventListener('touchend', endDrag);
+        }
+        
+        function drag(e) {
+            if (!isDragging) return;
+            
+            e.preventDefault();
+            currentY = e.type === 'mousemove' ? e.clientY : e.touches[0].clientY;
+            const deltaY = currentY - startY;
+            
+            // Ограничиваем движение только вниз
+            if (deltaY > 0) {
+                modalContent.style.transform = `translateY(${deltaY}px)`;
+            }
+        }
+        
+        function endDrag() {
+            if (!isDragging) return;
+            
+            isDragging = false;
+            modalContent.style.transition = 'transform 0.3s ease-out';
+            
+            const deltaY = currentY - startY;
+            
+            // Если свайп был достаточно большим, закрываем модальное окно
+            if (deltaY > 100) {
+                window.closeTodoModal();
+            } else {
+                // Возвращаем на место
+                modalContent.style.transform = 'translateY(0)';
+            }
+            
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', endDrag);
+            document.removeEventListener('touchmove', drag);
+            document.removeEventListener('touchend', endDrag);
+        }
+    }
+
+    // Экспортируем функции для глобального доступа
+    window.openTodoModal = function() {
+        console.log('Opening todo modal...', todoModal);
+        if (todoModal) {
+            // Сначала сбрасываем transform
+            const modalContent = todoModal.querySelector('.modal-content');
+            if (modalContent) {
+                modalContent.style.transform = 'translateY(100%)';
+            }
+            
+            // Показываем модальное окно
+            todoModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            
+            // Небольшая задержка для плавной анимации
+            setTimeout(() => {
+                if (modalContent) {
+                    modalContent.style.transform = 'translateY(0)';
+                }
+            }, 10);
+            
+            renderTodos(); // Обновляем список при открытии
+            setupSwipeToClose(); // Настраиваем свайп для закрытия
+            console.log('Todo modal opened successfully');
+        } else {
+            console.error('Todo modal element not found');
+        }
+    };
+
+    window.closeTodoModal = function() {
+        console.log('Closing todo modal...');
+        if (todoModal) {
+            // Сначала убираем класс show
+            todoModal.classList.remove('show');
+            // Сбрасываем transform для плавного скрытия
+            const modalContent = todoModal.querySelector('.modal-content');
+            if (modalContent) {
+                modalContent.style.transform = 'translateY(100%)';
+            }
+            document.body.style.overflow = 'auto';
+        }
+    };
+}
+
